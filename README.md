@@ -1,5 +1,5 @@
 > ### **Class: K-Digital Training**
-|No||File Name|Description|
+|No|File Name|Description|
 |-----|------------------|------------|
 |1|[Data.csv](https://drive.google.com/file/d/10bQv-F1XOPXchXvV_ehIYHL-tmKwwKBe/view?usp=sharing)|AI Patent Dataset|
 |2|[CodeBook.xlsx](https://drive.google.com/file/d/1ri7_0y0r6rDqIpEM9gHx-Dg14eJjbnUD/view?usp=sharing)|Code book of Data.csv|
