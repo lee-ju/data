@@ -1,4 +1,4 @@
-> ### **Class: Patent Big Data Analysis**
+> ### **Class: K-Digital Training**
 |File Name|Description|
 |------------------|------------|
 |[Data.csv](https://drive.google.com/file/d/10bQv-F1XOPXchXvV_ehIYHL-tmKwwKBe/view?usp=sharing)|AI Patent Dataset|
