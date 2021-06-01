@@ -7,6 +7,7 @@
 
 > ### **Class: Seoul**
 |No|File Name|Description|
+|-----|------------------|------------|
 |1|[NotAccess](https://drive.google.com/drive/folders/1_L1QaM4u1XPRxbRnIhQU1XPBlyCC7RbY?usp=sharing)|None file|
 
 
