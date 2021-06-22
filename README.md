@@ -1,4 +1,4 @@
-> ### **Class: CJU CPU**
+> ### **CJU**
 |No|File Name|Description|
 |-----|------------------|------------|
 |1|[File Share](https://drive.google.com/drive/folders/13AMzpmcrktY5LUPBCEWTKqgbzlDo2K8k?usp=sharing)|PaceMaker|
