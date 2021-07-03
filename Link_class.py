@@ -63,7 +63,7 @@ model = Word2Vec(sentences=tokenized_data,
                  window=5,
                  min_count=5,
                  workers=-1,
-                 sg=1,
+                 sg=1, # when use skip-gram. sg=0 -> CBOW
                  epochs=5000)
 
 print("단어의 수 : {}".format(model.wv.vectors.shape[0]))
