@@ -1,19 +1,3 @@
-# -*- coding: utf-8 -*-
-# ---
-# jupyter:
-#   jupytext:
-#     formats: ipynb,py:light
-#     text_representation:
-#       extension: .py
-#       format_name: light
-#       format_version: '1.5'
-#       jupytext_version: 1.11.3
-#   kernelspec:
-#     display_name: Python 3
-#     language: python
-#     name: python3
-# ---
-
 # # 1. Word2Vec
 
 # [1] Mikolov, T., Chen, K., Corrado, G., & Dean, J. (2013). Efficient estimation of word representations in vector space. arXiv preprint arXiv:1301. 3781
@@ -34,8 +18,8 @@ from tqdm import tqdm
 # ## 1-2. 데이터 불러오기
 
 # 최초 한 번만 실행
-#urllib.request.urlretrieve('https://raw.githubusercontent.com/e9t/nsmc/master/ratings.txt',
-#                           filename='ratings.txt')
+urllib.request.urlretrieve('https://raw.githubusercontent.com/e9t/nsmc/master/ratings.txt',
+                           filename='ratings.txt')
 train_data = pd.read_table('ratings.txt')
 print(train_data.shape)
 train_data[:5]
@@ -51,7 +35,6 @@ print(train_data.shape)
 train_data['document'] = train_data['document'].str.replace("[^ㄱ-ㅎㅏ-ㅣ가-힣 ]", "")
 train_data[:5]
 
-# +
 # 불용어 처리
 stopwords = ['의', '가', '이', '은', '들', '는', '좀', '잘',
              '걍', '과', '도', '를', '으로', '자', '에', '와', ' 한', '한다']
@@ -64,7 +47,6 @@ for sentence in tqdm(train_data['document']):
     temp_x = [word for word in temp_x if not word in stopwords]
     tokenized_data.append(temp_x)
 
-# +
 # 리뷰 길이 확인
 print('리뷰 최대 길이 : ', max(len(L) for L in tokenized_data))
 print('리뷰 평균 길이 : ', sum(map(len, tokenized_data)) / len(tokenized_data))
@@ -73,7 +55,6 @@ plt.hist([len(s) for s in tokenized_data], bins=50)
 plt.xlabel('length of samples')
 plt.ylabel('number of samples')
 plt.show()
-# -
 
 # ## 1-4. Word2Vec 모델 구축하기
 
@@ -111,15 +92,12 @@ print(model_reroad.most_similar('기생충'))
 
 print(model_reroad.most_similar(positive=['기생충', '하정우'], negative=['송강호'], topn=10))
 
-# + [markdown] heading_collapsed=true
 # # 2. VAE with flatten layer
 
-# + [markdown] hidden=true
 # [1] Kingma, D. P., & Welling, M. (2013). Auto-encoding variational bayes. arXiv prepring arXiv:1312 6114
 #
 # [2] https://github.com/PacktPublishing/Advanced-Deep-Learning-with-Keras
 
-# + [markdown] hidden=true
 # ## 2-1. 패키지 호출하기
 
 # + hidden=true
@@ -132,11 +110,8 @@ from tensorflow.keras.datasets import mnist
 from tensorflow.keras import backend as K
 import numpy as np
 import matplotlib.pyplot as plt
-import argparse
-import os
 # %matplotlib inline
 
-# + hidden=true
 """def sampling
 @ Reparametrization Trick
 @ Instead of sampling from Q(z|X), sample eps = N(0, I)
@@ -149,22 +124,17 @@ def sampling(args):
     epsilon = K.random_normal(shape=(batch, dim)) # by default; mean=0 and std=1
     return z_mean + K.exp(0.5 * z_log_var) * epsilon
 
-
-# + [markdown] hidden=true
 # ## 2-2. 데이터 불러오기
 
-# + hidden=true
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 image_size = x_train.shape[1] # 28
 original_dim = image_size * image_size # 28 * 28
 
-# + [markdown] hidden=true
 # ## 2-3. 전처리하기
 
-# + hidden=true
 # Preprocessing
 x_train = np.reshape(x_train, [-1, original_dim]) # Flatten
-x_test = np.reshape(x_train, [-1, original_dim])
+x_test = np.reshape(x_test, [-1, original_dim]) # x_train ---> x_test
 x_train = x_train.astype('float32') / 255
 x_test = x_test.astype('float32') / 255
 
@@ -174,10 +144,8 @@ intermediate_dim = 512
 batch_size = 128
 latent_dim = 2
 
-# + [markdown] hidden=true
 # ## 2-4. VAE with flatten layer 모델 구축하기
 
-# + hidden=true
 ### Encoder
 inputs = Input(shape=input_shape, name='encoder_input')
 x = Dense(intermediate_dim, activation='relu')(inputs)
@@ -193,7 +161,6 @@ z = Lambda(sampling,
 encoder = Model(inputs, [z_mean, z_log_var, z], name='encoder')
 encoder.summary()
 
-# + hidden=true
 ### Decoder
 latent_inputs = Input(shape=(latent_dim, ), name='z_sampling')
 x = Dense(intermediate_dim, activation='relu')(latent_inputs)
@@ -202,17 +169,14 @@ outputs = Dense(original_dim, activation='sigmoid')(x)
 decoder = Model(latent_inputs, outputs, name='decoder')
 decoder.summary()
 
-# + hidden=true
 ### VAE
 outputs = decoder(encoder(inputs)[2])
 vae = Model(inputs, outputs, name='vae_mlp')
 
-# + [markdown] hidden=true
 # ## 2-5. 모델 학습 및 평가
 
-# + hidden=true
-epochs = 10
 if __name__ == '__main__':
+    epochs = 10
     models = (encoder, decoder)
     data = (x_test, y_test)
 
@@ -235,10 +199,8 @@ if __name__ == '__main__':
     history = vae.fit(x_train, epochs=epochs, batch_size=batch_size,
                       validation_data=(x_test, None), callbacks=[es, mc])
 
-# + [markdown] hidden=true
 # ### 2-5-1. Viz: Loss
 
-# + hidden=true
 fig, loss_ax = plt.subplots()
 loss_ax.plot(history.history['loss'], 'b', label='train loss')
 loss_ax.plot(history.history['val_loss'], 'r', label='val loss')
@@ -247,10 +209,8 @@ loss_ax.set_ylabel('loss')
 loss_ax.legend(loc='upper right')
 plt.show()
 
-# + [markdown] hidden=true
 # ### 2-5-2. Viz: Latent space
 
-# + hidden=true
 xmin = ymin = -4
 xmax = ymax = +4
 
@@ -275,10 +235,8 @@ plt.xlabel("z[0]")
 plt.ylabel("z[1]")
 plt.show()
 
-# + [markdown] hidden=true
 # ### 2-5-3. Viz: Generated obj
 
-# + hidden=true
 # display a 30x30 2D manifold of digits
 n = 30
 digit_size = 28
@@ -309,7 +267,6 @@ plt.xlabel("z[0]")
 plt.ylabel("z[1]")
 plt.imshow(figure, cmap='Greys_r')
 plt.show()
-# -
 
 # # 3. VAE with convolutional layer
 
@@ -324,8 +281,6 @@ from tensorflow.keras.datasets import mnist
 from tensorflow.keras import backend as K
 import numpy as np
 import matplotlib.pyplot as plt
-import argparse
-import os
 # %matplotlib inline
 
 def sampling(args):
@@ -342,7 +297,6 @@ def sampling(args):
 
 # ## 3-3. 전처리하기
 
-# +
 image_size = x_train.shape[1]
 x_train = np.reshape(x_train, [-1, image_size, image_size, 1])
 x_test = np.reshape(x_test, [-1, image_size, image_size, 1])
@@ -354,11 +308,9 @@ batch_size = 128
 kernel_size = 3 # multi-kernel CNN
 filters = 16
 latent_dim = 2
-# -
 
 # ## 3-4. VAE with conv layer 모델 구축하기
 
-# +
 ### Encoder
 inputs = Input(shape=input_shape, name='encoder_input')
 x = inputs
@@ -386,7 +338,6 @@ z = Lambda(sampling, output_shape=(latent_dim, ), name='z')([z_mean, z_log_var])
 encoder = Model(inputs, [z_mean, z_log_var, z], name='encoder')
 encoder.summary()
 
-# +
 ### Decoder
 latent_inputs = Input(shape=(latent_dim, ), name='z_sampling')
 x = Dense(shape[1] * shape[2] * shape[3],
@@ -408,7 +359,6 @@ outputs = Conv2DTranspose(filters=1,
 
 decoder = Model(latent_inputs, outputs, name='decoder')
 decoder.summary()
-# -
 
 ### VAE
 outputs = decoder(encoder(inputs)[2])
@@ -416,8 +366,8 @@ vae = Model(inputs, outputs, name='vae')
 
 # ## 3-5. 모델 학습 및 평가
 
-epochs = 10
 if __name__ == '__main__':
+    epochs = 10
     models = (encoder, decoder)
     data = (x_test, y_test)
     reconstruction_loss = binary_crossentropy(K.flatten(inputs),
@@ -449,7 +399,6 @@ plt.show()
 
 # ### 3-5-2. Viz: Latent space
 
-# +
 xmin = ymin = -4
 xmax = ymax = +4
 
@@ -473,11 +422,9 @@ for i, digit in enumerate(y_test):
 plt.xlabel("z[0]")
 plt.ylabel("z[1]")
 plt.show()
-# -
 
 # ### 3-5-3. Viz: Generated obj
 
-# +
 # display a 30x30 2D manifold of digits
 n = 30
 digit_size = 28
